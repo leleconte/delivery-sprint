@@ -4,31 +4,31 @@
     <meta charset="UTF-8"> 
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"> 
     <title>Delivery Sprint - Lele Conte</title> 
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
     <style> 
         /* DESIGN & COLOR PALETTE */ 
         :root { 
-            --bg-color: #f0f2f5; 
-            --primary: #2d3436; 
-            --accent: #0984e3; 
-            --danger: #d63031; 
-            --text: #2d3436; 
+            --bg-gradient: linear-gradient(135deg, #0f0c29, #302b63, #24243e); 
+            --primary: #ffffff; 
+            --accent: #00d2ff; 
+            --danger: #ff4757; 
+            --text: #ffffff; 
             --white: #ffffff; 
-            --gold: #f1c40f;
-            --road-color: #444; 
-            --sky-color: #74b9ff; 
+            --gold: #ffcc00;
+            --glass: rgba(255, 255, 255, 0.1);
         } 
 
         * { 
             margin: 0; 
             padding: 0; 
             box-sizing: border-box; 
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+            font-family: 'Montserrat', sans-serif; 
             user-select: none; 
             touch-action: none; 
         } 
 
         body { 
-            background-color: var(--bg-color); 
+            background: var(--bg-gradient); 
             color: var(--text); 
             overflow: hidden; 
             display: flex; 
@@ -43,7 +43,7 @@
             position: absolute; 
             width: 100%; 
             height: 100%; 
-            background: linear-gradient(135deg, #1e3799, #0984e3); 
+            background: var(--bg-gradient); 
             display: flex; 
             flex-direction: column; 
             justify-content: center; 
@@ -55,112 +55,153 @@
 
         h1 { 
             font-size: 3.5rem; 
+            font-weight: 800;
             color: var(--white); 
             margin-bottom: 5px; 
             text-transform: uppercase; 
-            letter-spacing: 4px; 
-            text-shadow: 0px 4px 10px rgba(0,0,0,0.3); 
+            letter-spacing: 6px; 
+            text-shadow: 0px 0px 20px rgba(0, 210, 255, 0.5); 
         } 
 
         .author { 
-            font-size: 1.2rem; 
+            font-size: 1rem; 
             color: var(--white); 
-            margin-bottom: 20px; 
-            opacity: 0.9; 
-            font-weight: 300; 
+            margin-bottom: 40px; 
+            opacity: 0.7; 
+            font-weight: 400; 
+            letter-spacing: 2px;
         } 
 
-        .author b { 
-            font-weight: 700; 
-            border-bottom: 2px solid var(--white); 
-        }
+        .author b { color: var(--accent); }
 
         .balance-tag {
+            background: var(--glass);
+            padding: 10px 25px;
+            border-radius: 50px;
+            border: 1px solid rgba(255,255,255,0.2);
             color: var(--gold);
-            font-weight: bold;
-            font-size: 1.6rem;
-            margin-bottom: 15px;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+            font-weight: 800;
+            font-size: 1.4rem;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
         }
-
-        /* NEGOZIO */
-        .shop-container {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            width: 100%;
-            max-width: 400px;
-            max-height: 30vh;
-            overflow-y: auto;
-            margin-bottom: 20px;
-            padding: 15px;
-            background: rgba(0,0,0,0.2);
-            border-radius: 20px;
-        }
-        .shop-container::-webkit-scrollbar { display: none; }
-
-        .shop-item {
-            background: var(--white);
-            padding: 15px;
-            border-radius: 15px;
-            cursor: pointer;
-            transition: 0.2s;
-            border: 3px solid transparent;
-        }
-        .shop-item.selected { border-color: var(--gold); transform: scale(1.05); }
-        .shop-item.locked { opacity: 0.6; background: #dfe6e9; }
-        .shop-item img { width: 35px; margin-bottom: 5px; }
 
         .menu-buttons { 
             display: flex; 
             flex-direction: column; 
             gap: 15px; 
             width: 100%; 
-            max-width: 300px; 
+            max-width: 320px; 
         } 
 
         button { 
-            padding: 15px 30px; 
-            font-size: 1.1rem; 
+            padding: 18px 30px; 
+            font-size: 1rem; 
             border: none; 
-            border-radius: 50px; 
+            border-radius: 15px; 
             cursor: pointer; 
-            transition: transform 0.2s, background 0.2s; 
-            font-weight: 600; 
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            font-weight: 700; 
+            text-transform: uppercase;
+            letter-spacing: 1px;
         } 
 
         .btn-play { 
-            background-color: var(--white); 
-            color: var(--accent); 
+            background: linear-gradient(90deg, #00d2ff, #3a7bd5);
+            color: white; 
+            box-shadow: 0 10px 20px rgba(0, 210, 255, 0.3);
         } 
+
+        .btn-shop {
+            background: var(--glass);
+            color: var(--white);
+            border: 1px solid rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+        }
 
         .btn-settings { 
-            background-color: rgba(255,255,255,0.2); 
-            color: var(--white); 
-            backdrop-filter: blur(5px); 
+            background: transparent;
+            color: rgba(255,255,255,0.5);
+            font-size: 0.8rem;
         } 
 
-        button:active { 
-            transform: scale(0.95); 
+        button:hover { transform: translateY(-3px); opacity: 0.9; }
+        button:active { transform: scale(0.95); } 
+
+        /* MODALI (Settings & Shop) */ 
+        .modal { 
+            position: absolute; 
+            top: 50%; 
+            left: 50%; 
+            transform: translate(-50%, -50%); 
+            background: rgba(15, 12, 41, 0.95); 
+            padding: 30px; 
+            border-radius: 30px; 
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5); 
+            z-index: 200; 
+            display: none; 
+            width: 90%; 
+            max-width: 450px; 
+            backdrop-filter: blur(20px);
         } 
+
+        .shop-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            max-height: 50vh;
+            overflow-y: auto;
+            padding-right: 5px;
+            margin: 20px 0;
+        }
+
+        .shop-grid::-webkit-scrollbar { width: 4px; }
+        .shop-grid::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 10px; }
+
+        .shop-item {
+            background: rgba(255,255,255,0.05);
+            padding: 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            text-align: center;
+            border: 2px solid transparent;
+            transition: 0.3s;
+        }
+
+        .shop-item.selected { border-color: var(--accent); background: rgba(0, 210, 255, 0.1); }
+        .shop-item.locked { opacity: 0.4; }
+        .shop-item img { width: 50px; height: 50px; object-fit: contain; margin-bottom: 10px; filter: drop-shadow(0 5px 5px rgba(0,0,0,0.3)); }
+        .shop-item b { display: block; font-size: 0.9rem; margin-top: 5px; color: var(--gold); }
+
+        .setting-row {
+            margin: 20px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        select, input[type="range"] {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            padding: 12px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.2);
+            outline: none;
+        }
 
         /* AREA DI GIOCO */ 
         #game-container { 
             position: relative; 
             width: 100vw; 
             height: 100vh; 
-            background-color: var(--sky-color); 
+            background: #1a1a1a; 
             display: none; 
         } 
 
-        canvas { 
-            display: block; 
-        } 
-
-        /* UI DURANTE IL GIOCO */ 
         #hud { 
             position: absolute; 
-            top: 20px; 
+            top: 30px; 
             left: 20px; 
             right: 20px; 
             display: flex; 
@@ -170,87 +211,62 @@
         } 
 
         .stat-box { 
-            background: rgba(255,255,255,0.9); 
-            padding: 10px 20px; 
-            border-radius: 15px; 
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1); 
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            padding: 12px 20px; 
+            border-radius: 20px; 
+            border: 1px solid rgba(255,255,255,0.1);
+            font-weight: 700;
         } 
 
-        /* CONTROLLI MOBILE */ 
         #mobile-controls { 
             position: absolute; 
-            bottom: 30px; 
+            bottom: 40px; 
             left: 30px; 
             right: 30px; 
             display: none; 
             justify-content: space-between; 
-            align-items: flex-end; 
             z-index: 10; 
         } 
 
         .nav-btn { 
-            width: 80px; 
-            height: 80px; 
-            background: rgba(255,255,255,0.3); 
-            border-radius: 50%; 
-            border: 2px solid white; 
+            width: 85px; 
+            height: 85px; 
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            border-radius: 25px; 
+            border: 1px solid rgba(255,255,255,0.2); 
             display: flex; 
             justify-content: center; 
             align-items: center; 
             color: white; 
             font-size: 2rem; 
-            font-weight: bold; 
         } 
-
-        /* MODALE IMPOSTAZIONI */ 
-        #settings-modal { 
-            position: absolute; 
-            top: 50%; 
-            left: 50%; 
-            transform: translate(-50%, -50%); 
-            background: var(--white); 
-            padding: 30px; 
-            border-radius: 20px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3); 
-            z-index: 200; 
-            display: none; 
-            width: 90%; 
-            max-width: 400px; 
-        } 
-
-        .setting-row {
-            margin: 15px 0;
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-
-        select, input[type="range"] {
-            padding: 8px;
-            border-radius: 10px;
-            border: 1px solid #ccc;
-        }
     </style> 
 </head> 
 <body> 
 
     <div id="main-menu"> 
         <h1>DELIVERY SPRINT</h1> 
-        <p class="author">made by <b>Lele Conte</b></p> 
+        <p class="author">sviluppato da <b>Lele Conte</b></p> 
         
-        <div class="balance-tag">CASH: $<span id="menu-cash">0</span></div>
-
-        <div class="shop-container" id="shop-list">
-            </div>
+        <div class="balance-tag">$ <span id="menu-cash">0</span></div>
           
         <div class="menu-buttons"> 
-            <button class="btn-play" id="btn-start" onclick="startGame()">INIZIA CONSEGNE</button> 
-            <button class="btn-settings" id="btn-sett" onclick="toggleSettings()">IMPOSTAZIONI</button> 
+            <button class="btn-play" id="btn-start" onclick="startGame()">Inizia Consegne</button> 
+            <button class="btn-shop" onclick="toggleModal('shop-modal')">Garage & Negozio</button> 
+            <button class="btn-settings" id="btn-sett" onclick="toggleModal('settings-modal')">Impostazioni</button> 
         </div> 
     </div> 
 
-    <div id="settings-modal"> 
-        <h2 id="settings-title" style="margin-bottom: 20px;">Impostazioni</h2> 
+    <div id="shop-modal" class="modal">
+        <h2 style="text-align:center; letter-spacing: 2px;">GARAGE</h2>
+        <div class="shop-grid" id="shop-list"></div>
+        <button class="btn-play" style="width:100%" onclick="toggleModal('shop-modal')">Indietro</button>
+    </div>
+
+    <div id="settings-modal" class="modal"> 
+        <h2 id="settings-title" style="margin-bottom: 20px; text-align:center;">SETTINGS</h2> 
         
         <div class="setting-row">
             <label id="label-lang">Lingua:</label>
@@ -270,18 +286,18 @@
         </div>
 
         <div class="setting-row">
-            <label id="label-bright">Luminosità:</label>
+            <label id="label-bright">Luminosità Schermo:</label>
             <input type="range" id="bright-range" min="30" max="120" value="100" oninput="updateBrightness()">
         </div>
 
-        <p style="margin: 10px 0; font-size: 0.8rem; opacity: 0.6;">Versione: 1.0.6 (2026)</p> 
-        <button class="btn-play" style="background: var(--accent); color: white; width: 100%;" onclick="toggleSettings()">CHIUDI</button> 
+        <p style="margin: 10px 0; font-size: 0.7rem; opacity: 0.4; text-align:center;">Build 1.0.7 (2026) - Persistent Engine</p> 
+        <button class="btn-shop" style="width: 100%;" onclick="toggleModal('settings-modal')">Salva e Chiudi</button> 
     </div> 
 
     <div id="game-container"> 
         <div id="hud"> 
             <div class="stat-box"><span id="hud-score-text">Punti</span>: <span id="score">0</span></div> 
-            <div class="stat-box"><span id="hud-speed">0</span> km/h</div> 
+            <div class="stat-box"><span id="hud-speed">0</span> KM/H</div> 
         </div> 
 
         <canvas id="gameCanvas"></canvas> 
@@ -299,7 +315,7 @@
         const gameContainer = document.getElementById('game-container'); 
         const mobileControls = document.getElementById('mobile-controls'); 
 
-        // --- ECONOMIA E VEICOLI (Persistenza Sessione) ---
+        // ECONOMIA E VEICOLI
         let userMoney = parseInt(localStorage.getItem('lele_cash')) || 0;
         let unlocked = JSON.parse(localStorage.getItem('lele_unlock')) || ['bike'];
         let currentVehicle = localStorage.getItem('lele_veh') || 'bike';
@@ -331,6 +347,11 @@
         const buildings = []; 
         const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent); 
 
+        function toggleModal(id) {
+            const m = document.getElementById(id);
+            m.style.display = (m.style.display === 'block') ? 'none' : 'block';
+        }
+
         function updateBrightness() {
             document.body.style.filter = `brightness(${document.getElementById('bright-range').value}%)`;
         }
@@ -338,11 +359,10 @@
         function updateLanguage() {
             const lang = document.getElementById('lang-select').value;
             const t = {
-                it: { start: "INIZIA CONSEGNE", settings: "IMPOSTAZIONI", score: "Punti", lang: "Lingua:", diff: "Difficoltà:", bright: "Luminosità:", title: "Impostazioni" },
-                en: { start: "START DELIVERY", settings: "SETTINGS", score: "Score", lang: "Language:", diff: "Difficulty:", bright: "Brightness:", title: "Settings" }
+                it: { start: "Inizia Consegne", score: "Punti", lang: "Lingua:", diff: "Difficoltà:", bright: "Luminosità:", title: "Impostazioni" },
+                en: { start: "Start Delivery", score: "Score", lang: "Language:", diff: "Difficulty:", bright: "Brightness:", title: "Settings" }
             };
             document.getElementById('btn-start').innerText = t[lang].start;
-            document.getElementById('btn-sett').innerText = t[lang].settings;
             document.getElementById('hud-score-text').innerText = t[lang].score;
             document.getElementById('label-lang').innerText = t[lang].lang;
             document.getElementById('label-diff').innerText = t[lang].diff;
@@ -358,9 +378,9 @@
                 const isOwned = unlocked.includes(id);
                 shop.innerHTML += `
                     <div class="shop-item ${isOwned ? (currentVehicle === id ? 'selected' : '') : 'locked'}" onclick="handleShopClick('${id}')">
-                        <img src="${v.img}"><br>
-                        <small>${v.name}</small><br>
-                        <b>${isOwned ? 'MIO' : '$'+v.price.toLocaleString()}</b>
+                        <img src="${v.img}">
+                        <small>${v.name}</small>
+                        <b>${isOwned ? (currentVehicle === id ? 'IN USO' : 'USA') : '$'+v.price.toLocaleString()}</b>
                     </div>
                 `;
             }
@@ -410,7 +430,7 @@
                 z: z || 0, 
                 h: 150 + Math.random() * 200, 
                 w: 100 + Math.random() * 50, 
-                color: `hsl(210, 20%, ${30 + Math.random() * 20}%)` 
+                color: `hsl(210, 20%, ${15 + Math.random() * 10}%)` 
             }); 
         } 
 
@@ -446,11 +466,6 @@
             alert(`${msg}! Hai guadagnato: $${reward}`);
             location.reload();
         }
-
-        function toggleSettings() { 
-            const modal = document.getElementById('settings-modal'); 
-            modal.style.display = modal.style.display === 'block' ? 'none' : 'block'; 
-        } 
 
         const keys = {}; 
         window.addEventListener('keydown', e => keys[e.key] = true); 
@@ -512,7 +527,7 @@
             ctx.clearRect(0, 0, canvas.width, canvas.height); 
 
             // Strada 3D
-            ctx.fillStyle = "#34495e"; 
+            ctx.fillStyle = "#2c3e50"; 
             ctx.beginPath(); 
             ctx.moveTo(canvas.width * 0.45, 0); 
             ctx.lineTo(canvas.width * 0.55, 0); 
@@ -521,7 +536,7 @@
             ctx.fill(); 
 
             // Linea centrale 
-            ctx.strokeStyle = "#fff"; 
+            ctx.strokeStyle = "rgba(255,255,255,0.5)"; 
             ctx.setLineDash([40, 40]); 
             ctx.lineDashOffset = -roadOffset; 
             ctx.beginPath(); 
