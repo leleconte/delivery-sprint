@@ -35,6 +35,7 @@
             justify-content: center; 
             align-items: center; 
             height: 100vh; 
+            transition: filter 0.3s;
         } 
 
         /* SCHERMATA PRINCIPALE */ 
@@ -53,12 +54,12 @@
         } 
 
         h1 { 
-            font-size: 3rem; 
+            font-size: 3.5rem; 
             color: var(--white); 
             margin-bottom: 5px; 
             text-transform: uppercase; 
-            letter-spacing: 2px; 
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.2); 
+            letter-spacing: 4px; 
+            text-shadow: 0px 4px 10px rgba(0,0,0,0.3); 
         } 
 
         .author { 
@@ -77,7 +78,7 @@
         .balance-tag {
             color: var(--gold);
             font-weight: bold;
-            font-size: 1.4rem;
+            font-size: 1.6rem;
             margin-bottom: 15px;
             text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
         }
@@ -89,10 +90,10 @@
             gap: 10px;
             width: 100%;
             max-width: 400px;
-            max-height: 35vh;
+            max-height: 30vh;
             overflow-y: auto;
             margin-bottom: 20px;
-            padding: 10px;
+            padding: 15px;
             background: rgba(0,0,0,0.2);
             border-radius: 20px;
         }
@@ -216,6 +217,19 @@
             width: 90%; 
             max-width: 400px; 
         } 
+
+        .setting-row {
+            margin: 15px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        select, input[type="range"] {
+            padding: 8px;
+            border-radius: 10px;
+            border: 1px solid #ccc;
+        }
     </style> 
 </head> 
 <body> 
@@ -230,23 +244,44 @@
             </div>
           
         <div class="menu-buttons"> 
-            <button class="btn-play" onclick="startGame()">INIZIA CONSEGNE</button> 
-            <button class="btn-settings" onclick="toggleSettings()">IMPOSTAZIONI</button> 
+            <button class="btn-play" id="btn-start" onclick="startGame()">INIZIA CONSEGNE</button> 
+            <button class="btn-settings" id="btn-sett" onclick="toggleSettings()">IMPOSTAZIONI</button> 
         </div> 
     </div> 
 
     <div id="settings-modal"> 
-        <h2 style="margin-bottom: 20px;">Impostazioni</h2> 
-        <p>Difficoltà: Adattiva</p> 
-        <p>Progressione: Accelerazione Continua</p>
-        <p style="margin: 15px 0;">Versione: 1.0.5 (2026)</p> 
+        <h2 id="settings-title" style="margin-bottom: 20px;">Impostazioni</h2> 
+        
+        <div class="setting-row">
+            <label id="label-lang">Lingua:</label>
+            <select id="lang-select" onchange="updateLanguage()">
+                <option value="it">Italiano</option>
+                <option value="en">English</option>
+            </select>
+        </div>
+
+        <div class="setting-row">
+            <label id="label-diff">Difficoltà:</label>
+            <select id="diff-select">
+                <option value="0.5">Facile</option>
+                <option value="1" selected>Normale</option>
+                <option value="2">Difficile</option>
+            </select>
+        </div>
+
+        <div class="setting-row">
+            <label id="label-bright">Luminosità:</label>
+            <input type="range" id="bright-range" min="30" max="120" value="100" oninput="updateBrightness()">
+        </div>
+
+        <p style="margin: 10px 0; font-size: 0.8rem; opacity: 0.6;">Versione: 1.0.6 (2026)</p> 
         <button class="btn-play" style="background: var(--accent); color: white; width: 100%;" onclick="toggleSettings()">CHIUDI</button> 
     </div> 
 
     <div id="game-container"> 
         <div id="hud"> 
-            <div class="stat-box">Punti: <span id="score">0</span></div> 
-            <div class="stat-box">Velocità: <span id="hud-speed">0</span> km/h</div> 
+            <div class="stat-box"><span id="hud-score-text">Punti</span>: <span id="score">0</span></div> 
+            <div class="stat-box"><span id="hud-speed">0</span> km/h</div> 
         </div> 
 
         <canvas id="gameCanvas"></canvas> 
@@ -264,7 +299,7 @@
         const gameContainer = document.getElementById('game-container'); 
         const mobileControls = document.getElementById('mobile-controls'); 
 
-        // --- ECONOMIA E VEICOLI ---
+        // --- ECONOMIA E VEICOLI (Persistenza Sessione) ---
         let userMoney = parseInt(localStorage.getItem('lele_cash')) || 0;
         let unlocked = JSON.parse(localStorage.getItem('lele_unlock')) || ['bike'];
         let currentVehicle = localStorage.getItem('lele_veh') || 'bike';
@@ -281,17 +316,39 @@
 
         const houseImg = new Image(); 
         houseImg.src = 'https://cdn-icons-png.flaticon.com/512/619/619153.png'; 
+        const holeImg = new Image();
+        holeImg.src = 'https://cdn-icons-png.flaticon.com/512/6122/6122394.png'; 
 
         let gameActive = false; 
         let score = 0; 
         let roadOffset = 0; 
         let currentSpeed = 5; 
         let accelerationTimer = 0;
+        let potholes = []; 
 
         const player = { x: 0, y: 0, w: 60, h: 60, targetX: 0 }; 
         const target = { x: 0, y: -200, w: 60, h: 60 }; 
         const buildings = []; 
         const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent); 
+
+        function updateBrightness() {
+            document.body.style.filter = `brightness(${document.getElementById('bright-range').value}%)`;
+        }
+
+        function updateLanguage() {
+            const lang = document.getElementById('lang-select').value;
+            const t = {
+                it: { start: "INIZIA CONSEGNE", settings: "IMPOSTAZIONI", score: "Punti", lang: "Lingua:", diff: "Difficoltà:", bright: "Luminosità:", title: "Impostazioni" },
+                en: { start: "START DELIVERY", settings: "SETTINGS", score: "Score", lang: "Language:", diff: "Difficulty:", bright: "Brightness:", title: "Settings" }
+            };
+            document.getElementById('btn-start').innerText = t[lang].start;
+            document.getElementById('btn-sett').innerText = t[lang].settings;
+            document.getElementById('hud-score-text').innerText = t[lang].score;
+            document.getElementById('label-lang').innerText = t[lang].lang;
+            document.getElementById('label-diff').innerText = t[lang].diff;
+            document.getElementById('label-bright').innerText = t[lang].bright;
+            document.getElementById('settings-title').innerText = t[lang].title;
+        }
 
         function renderShop() {
             const shop = document.getElementById('shop-list');
@@ -318,10 +375,14 @@
                 unlocked.push(id);
                 currentVehicle = id;
             }
+            saveSession();
+            renderShop();
+        }
+
+        function saveSession() {
             localStorage.setItem('lele_cash', userMoney);
             localStorage.setItem('lele_unlock', JSON.stringify(unlocked));
             localStorage.setItem('lele_veh', currentVehicle);
-            renderShop();
         }
 
         function init() { 
@@ -334,6 +395,7 @@
             currentSpeed = vehicles[currentVehicle].speed;
             accelerationTimer = 0;
             score = 0;
+            potholes = [];
             document.getElementById('score').innerText = score;
 
             buildings.length = 0; 
@@ -355,7 +417,17 @@
         function spawnDelivery() { 
             target.x = (Math.random() - 0.5) * (canvas.width * 0.4); 
             target.y = -600; 
-        } 
+        }
+
+        function spawnPothole() {
+            const diff = parseFloat(document.getElementById('diff-select').value);
+            if(Math.random() < 0.01 * diff) {
+                potholes.push({
+                    x: (Math.random() - 0.5) * (canvas.width * 0.4),
+                    y: -100
+                });
+            }
+        }
 
         function startGame() { 
             mainMenu.style.display = 'none'; 
@@ -366,12 +438,12 @@
             animate(); 
         } 
 
-        function gameOver() {
+        function gameOver(msg) {
             gameActive = false;
             const reward = score * 50;
             userMoney += reward;
-            localStorage.setItem('lele_cash', userMoney);
-            alert(`CRASH! Velocità finale: ${Math.floor(currentSpeed * 10)} km/h. Incassato: $${reward}`);
+            saveSession();
+            alert(`${msg}! Hai guadagnato: $${reward}`);
             location.reload();
         }
 
@@ -392,7 +464,6 @@
         function update() { 
             if (!gameActive) return; 
 
-            // Accelerazione costante nel tempo (ogni secondo circa aumenta)
             accelerationTimer++;
             if(accelerationTimer % 60 === 0) currentSpeed += 0.05;
 
@@ -402,9 +473,8 @@
 
             player.x += (player.targetX - player.x) * 0.15; 
 
-            // Limiti strada con Game Over se esci
             const roadLimit = canvas.width * 0.15; 
-            if (player.x < roadLimit || player.x > canvas.width - roadLimit - player.w) gameOver(); 
+            if (player.x < roadLimit || player.x > canvas.width - roadLimit - player.w) gameOver("INCIDENTE"); 
 
             roadOffset += currentSpeed; 
             
@@ -419,11 +489,19 @@
             target.y += currentSpeed; 
             if(target.y > canvas.height) spawnDelivery(); 
 
-            // Collisione 
+            spawnPothole();
+            potholes.forEach((p, i) => {
+                p.y += currentSpeed;
+                if(p.y > canvas.height) potholes.splice(i, 1);
+                
+                const pDist = Math.hypot(player.x + player.w/2 - (canvas.width/2 + p.x), player.y + player.h/2 - p.y);
+                if(pDist < 40) gameOver("FOSSO PRESO");
+            });
+
             const dist = Math.hypot(player.x + player.w/2 - (canvas.width/2 + target.x), player.y - target.y); 
             if(dist < 55) { 
                 score++; 
-                currentSpeed += 0.2; // Accelerazione per ogni punto preso
+                currentSpeed += 0.2; 
                 document.getElementById('score').innerText = score; 
                 spawnDelivery(); 
             } 
@@ -461,10 +539,15 @@
                 ctx.fillRect(xPos, yPos, b.w * scale, b.h * scale); 
             }); 
 
+            // Fossi
+            potholes.forEach(p => {
+                ctx.drawImage(holeImg, canvas.width/2 + p.x - 20, p.y - 20, 40, 40);
+            });
+
             // Target 
             ctx.drawImage(houseImg, canvas.width/2 + target.x - 30, target.y, 60, 60); 
 
-            // Mezzo attuale
+            // Veicolo Attuale
             const vImg = new Image();
             vImg.src = vehicles[currentVehicle].img;
             ctx.drawImage(vImg, player.x, player.y, player.w, player.h); 
