@@ -1,393 +1,483 @@
-<!DOCTYPE html>
-<html lang="it">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Delivery Sprint - Lele Conte</title>
-    <style>
-        /* DESIGN & COLOR PALETTE */
-        :root {
-            --bg-color: #f0f2f5;
-            --primary: #2d3436;
-            --accent: #0984e3;
-            --danger: #d63031;
-            --text: #2d3436;
-            --white: #ffffff;
-            --road-color: #444;
-            --sky-color: #74b9ff;
+<!DOCTYPE html> 
+<html lang="it"> 
+<head> 
+    <meta charset="UTF-8"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"> 
+    <title>Delivery Sprint - Lele Conte</title> 
+    <style> 
+        /* DESIGN & COLOR PALETTE */ 
+        :root { 
+            --bg-color: #f0f2f5; 
+            --primary: #2d3436; 
+            --accent: #0984e3; 
+            --danger: #d63031; 
+            --text: #2d3436; 
+            --white: #ffffff; 
+            --gold: #f1c40f;
+            --road-color: #444; 
+            --sky-color: #74b9ff; 
+        } 
+
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+            user-select: none; 
+            touch-action: none; 
+        } 
+
+        body { 
+            background-color: var(--bg-color); 
+            color: var(--text); 
+            overflow: hidden; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+        } 
+
+        /* SCHERMATA PRINCIPALE */ 
+        #main-menu { 
+            position: absolute; 
+            width: 100%; 
+            height: 100%; 
+            background: linear-gradient(135deg, #1e3799, #0984e3); 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center; 
+            z-index: 100; 
+            text-align: center; 
+            padding: 20px; 
+        } 
+
+        h1 { 
+            font-size: 3rem; 
+            color: var(--white); 
+            margin-bottom: 5px; 
+            text-transform: uppercase; 
+            letter-spacing: 2px; 
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2); 
+        } 
+
+        .author { 
+            font-size: 1.2rem; 
+            color: var(--white); 
+            margin-bottom: 20px; 
+            opacity: 0.9; 
+            font-weight: 300; 
+        } 
+
+        .author b { 
+            font-weight: 700; 
+            border-bottom: 2px solid var(--white); 
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            user-select: none;
-            touch-action: none;
-        }
-
-        body {
-            background-color: var(--bg-color);
-            color: var(--text);
-            overflow: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-
-        /* SCHERMATA PRINCIPALE */
-        #main-menu {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, #74b9ff, #a29bfe);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 100;
-            text-align: center;
-            padding: 20px;
-        }
-
-        h1 {
-            font-size: 3rem;
-            color: var(--white);
-            margin-bottom: 5px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-        }
-
-        .author {
-            font-size: 1.2rem;
-            color: var(--white);
-            margin-bottom: 40px;
-            opacity: 0.9;
-            font-weight: 300;
-        }
-
-        .author b {
-            font-weight: 700;
-            border-bottom: 2px solid var(--white);
-        }
-
-        .menu-buttons {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            width: 100%;
-            max-width: 300px;
-        }
-
-        button {
-            padding: 15px 30px;
-            font-size: 1.1rem;
-            border: none;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: transform 0.2s, background 0.2s;
-            font-weight: 600;
-        }
-
-        .btn-play {
-            background-color: var(--white);
-            color: var(--accent);
-        }
-
-        .btn-settings {
-            background-color: rgba(255,255,255,0.2);
-            color: var(--white);
-            backdrop-filter: blur(5px);
-        }
-
-        button:active {
-            transform: scale(0.95);
-        }
-
-        /* AREA DI GIOCO */
-        #game-container {
-            position: relative;
-            width: 100vw;
-            height: 100vh;
-            background-color: var(--sky-color);
-            display: none;
-        }
-
-        canvas {
-            display: block;
-        }
-
-        /* UI DURANTE IL GIOCO */
-        #hud {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            right: 20px;
-            display: flex;
-            justify-content: space-between;
-            pointer-events: none;
-            z-index: 10;
-        }
-
-        .stat-box {
-            background: rgba(255,255,255,0.9);
-            padding: 10px 20px;
-            border-radius: 15px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-
-        /* CONTROLLI MOBILE */
-        #mobile-controls {
-            position: absolute;
-            bottom: 30px;
-            left: 30px;
-            right: 30px;
-            display: none;
-            justify-content: space-between;
-            align-items: flex-end;
-            z-index: 10;
-        }
-
-        .nav-btn {
-            width: 80px;
-            height: 80px;
-            background: rgba(255,255,255,0.3);
-            border-radius: 50%;
-            border: 2px solid white;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: white;
-            font-size: 2rem;
+        .balance-tag {
+            color: var(--gold);
             font-weight: bold;
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
         }
 
-        /* MODALE IMPOSTAZIONI */
-        #settings-modal {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: var(--white);
-            padding: 30px;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            z-index: 200;
-            display: none;
-            width: 90%;
+        /* NEGOZIO */
+        .shop-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            width: 100%;
             max-width: 400px;
+            max-height: 35vh;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            padding: 10px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 20px;
         }
-    </style>
-</head>
-<body>
+        .shop-container::-webkit-scrollbar { display: none; }
 
-    <div id="main-menu">
-        <h1>DELIVERY SPRINT</h1>
-        <p class="author">made by <b>Lele Conte</b></p>
+        .shop-item {
+            background: var(--white);
+            padding: 15px;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: 0.2s;
+            border: 3px solid transparent;
+        }
+        .shop-item.selected { border-color: var(--gold); transform: scale(1.05); }
+        .shop-item.locked { opacity: 0.6; background: #dfe6e9; }
+        .shop-item img { width: 35px; margin-bottom: 5px; }
+
+        .menu-buttons { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 15px; 
+            width: 100%; 
+            max-width: 300px; 
+        } 
+
+        button { 
+            padding: 15px 30px; 
+            font-size: 1.1rem; 
+            border: none; 
+            border-radius: 50px; 
+            cursor: pointer; 
+            transition: transform 0.2s, background 0.2s; 
+            font-weight: 600; 
+        } 
+
+        .btn-play { 
+            background-color: var(--white); 
+            color: var(--accent); 
+        } 
+
+        .btn-settings { 
+            background-color: rgba(255,255,255,0.2); 
+            color: var(--white); 
+            backdrop-filter: blur(5px); 
+        } 
+
+        button:active { 
+            transform: scale(0.95); 
+        } 
+
+        /* AREA DI GIOCO */ 
+        #game-container { 
+            position: relative; 
+            width: 100vw; 
+            height: 100vh; 
+            background-color: var(--sky-color); 
+            display: none; 
+        } 
+
+        canvas { 
+            display: block; 
+        } 
+
+        /* UI DURANTE IL GIOCO */ 
+        #hud { 
+            position: absolute; 
+            top: 20px; 
+            left: 20px; 
+            right: 20px; 
+            display: flex; 
+            justify-content: space-between; 
+            pointer-events: none; 
+            z-index: 10; 
+        } 
+
+        .stat-box { 
+            background: rgba(255,255,255,0.9); 
+            padding: 10px 20px; 
+            border-radius: 15px; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1); 
+        } 
+
+        /* CONTROLLI MOBILE */ 
+        #mobile-controls { 
+            position: absolute; 
+            bottom: 30px; 
+            left: 30px; 
+            right: 30px; 
+            display: none; 
+            justify-content: space-between; 
+            align-items: flex-end; 
+            z-index: 10; 
+        } 
+
+        .nav-btn { 
+            width: 80px; 
+            height: 80px; 
+            background: rgba(255,255,255,0.3); 
+            border-radius: 50%; 
+            border: 2px solid white; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            color: white; 
+            font-size: 2rem; 
+            font-weight: bold; 
+        } 
+
+        /* MODALE IMPOSTAZIONI */ 
+        #settings-modal { 
+            position: absolute; 
+            top: 50%; 
+            left: 50%; 
+            transform: translate(-50%, -50%); 
+            background: var(--white); 
+            padding: 30px; 
+            border-radius: 20px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3); 
+            z-index: 200; 
+            display: none; 
+            width: 90%; 
+            max-width: 400px; 
+        } 
+    </style> 
+</head> 
+<body> 
+
+    <div id="main-menu"> 
+        <h1>DELIVERY SPRINT</h1> 
+        <p class="author">made by <b>Lele Conte</b></p> 
         
-        <div class="menu-buttons">
-            <button class="btn-play" onclick="startGame()">INIZIA CONSEGNE</button>
-            <button class="btn-settings" onclick="toggleSettings()">IMPOSTAZIONI</button>
-        </div>
-    </div>
+        <div class="balance-tag">CASH: $<span id="menu-cash">0</span></div>
 
-    <div id="settings-modal">
-        <h2 style="margin-bottom: 20px;">Impostazioni</h2>
-        <p>Difficoltà: Normale</p>
-        <p style="margin: 15px 0;">Versione: 1.0.2 (2026)</p>
-        <button class="btn-play" style="background: var(--accent); color: white; width: 100%;" onclick="toggleSettings()">CHIUDI</button>
-    </div>
+        <div class="shop-container" id="shop-list">
+            </div>
+          
+        <div class="menu-buttons"> 
+            <button class="btn-play" onclick="startGame()">INIZIA CONSEGNE</button> 
+            <button class="btn-settings" onclick="toggleSettings()">IMPOSTAZIONI</button> 
+        </div> 
+    </div> 
 
-    <div id="game-container">
-        <div id="hud">
-            <div class="stat-box">Punti: <span id="score">0</span></div>
-            <div class="stat-box">Velocità: <span id="speed">0</span> km/h</div>
-        </div>
+    <div id="settings-modal"> 
+        <h2 style="margin-bottom: 20px;">Impostazioni</h2> 
+        <p>Difficoltà: Adattiva</p> 
+        <p>Progressione: Accelerazione Continua</p>
+        <p style="margin: 15px 0;">Versione: 1.0.5 (2026)</p> 
+        <button class="btn-play" style="background: var(--accent); color: white; width: 100%;" onclick="toggleSettings()">CHIUDI</button> 
+    </div> 
 
-        <canvas id="gameCanvas"></canvas>
+    <div id="game-container"> 
+        <div id="hud"> 
+            <div class="stat-box">Punti: <span id="score">0</span></div> 
+            <div class="stat-box">Velocità: <span id="hud-speed">0</span> km/h</div> 
+        </div> 
 
-        <div id="mobile-controls">
-            <div class="nav-btn" id="leftBtn">←</div>
-            <div class="nav-btn" id="rightBtn">→</div>
-        </div>
-    </div>
+        <canvas id="gameCanvas"></canvas> 
 
-    <script>
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
-        const mainMenu = document.getElementById('main-menu');
-        const gameContainer = document.getElementById('game-container');
-        const mobileControls = document.getElementById('mobile-controls');
+        <div id="mobile-controls"> 
+            <div class="nav-btn" id="leftBtn">←</div> 
+            <div class="nav-btn" id="rightBtn">→</div> 
+        </div> 
+    </div> 
 
-        // Caricamento Asset
-        const bikeImg = new Image();
-        bikeImg.src = 'https://cdn-icons-png.flaticon.com/512/3163/3163174.png';
-        const houseImg = new Image();
-        houseImg.src = 'https://cdn-icons-png.flaticon.com/512/619/619153.png';
+    <script> 
+        const canvas = document.getElementById('gameCanvas'); 
+        const ctx = canvas.getContext('2d'); 
+        const mainMenu = document.getElementById('main-menu'); 
+        const gameContainer = document.getElementById('game-container'); 
+        const mobileControls = document.getElementById('mobile-controls'); 
 
-        let gameActive = false;
-        let score = 0;
-        let roadOffset = 0;
-        let currentSpeed = 5;
+        // --- ECONOMIA E VEICOLI ---
+        let userMoney = parseInt(localStorage.getItem('lele_cash')) || 0;
+        let unlocked = JSON.parse(localStorage.getItem('lele_unlock')) || ['bike'];
+        let currentVehicle = localStorage.getItem('lele_veh') || 'bike';
 
-        const player = {
-            x: 0,
-            y: 0,
-            w: 60,
-            h: 60,
-            targetX: 0
+        const vehicles = {
+            bike: { name: "BMX", img: "https://cdn-icons-png.flaticon.com/512/3163/3163174.png", price: 0, speed: 6 },
+            moped: { name: "Scooter", img: "https://cdn-icons-png.flaticon.com/512/1710/1710183.png", price: 2000, speed: 8 },
+            motocross: { name: "Cross", img: "https://cdn-icons-png.flaticon.com/512/3503/3503831.png", price: 10000, speed: 10 },
+            compact: { name: "City Car", img: "https://cdn-icons-png.flaticon.com/512/744/744465.png", price: 25000, speed: 11 },
+            truck: { name: "Truck", img: "https://cdn-icons-png.flaticon.com/512/2555/2555013.png", price: 60000, speed: 12 },
+            superbike: { name: "Superbike", img: "https://cdn-icons-png.flaticon.com/512/3503/3503798.png", price: 120000, speed: 15 },
+            supercar: { name: "Hypercar", img: "https://cdn-icons-png.flaticon.com/512/808/808439.png", price: 500000, speed: 20 }
         };
 
-        const target = {
-            x: 0,
-            y: -200,
-            w: 60,
-            h: 60,
-            depth: 1
-        };
+        const houseImg = new Image(); 
+        houseImg.src = 'https://cdn-icons-png.flaticon.com/512/619/619153.png'; 
 
-        const buildings = [];
-        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+        let gameActive = false; 
+        let score = 0; 
+        let roadOffset = 0; 
+        let currentSpeed = 5; 
+        let accelerationTimer = 0;
 
-        function init() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            player.x = canvas.width / 2 - player.w / 2;
-            player.targetX = player.x;
-            player.y = canvas.height - 140;
+        const player = { x: 0, y: 0, w: 60, h: 60, targetX: 0 }; 
+        const target = { x: 0, y: -200, w: 60, h: 60 }; 
+        const buildings = []; 
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent); 
 
-            buildings.length = 0;
-            for(let i=0; i<8; i++) spawnBuilding(i/8);
-            spawnDelivery();
-        }
-
-        function spawnBuilding(z) {
-            const side = Math.random() > 0.5;
-            buildings.push({
-                side: side,
-                z: z || 0,
-                h: 150 + Math.random() * 200,
-                w: 100 + Math.random() * 50,
-                color: `hsl(200, 10%, ${40 + Math.random() * 20}%)`
-            });
-        }
-
-        function spawnDelivery() {
-            target.x = (Math.random() - 0.5) * (canvas.width * 0.4);
-            target.y = -500;
-            target.depth = 1.5;
-        }
-
-        function startGame() {
-            mainMenu.style.display = 'none';
-            gameContainer.style.display = 'block';
-            if (isMobile) mobileControls.style.display = 'flex';
-            gameActive = true;
-            init();
-            animate();
-        }
-
-        function toggleSettings() {
-            const modal = document.getElementById('settings-modal');
-            modal.style.display = modal.style.display === 'block' ? 'none' : 'block';
-        }
-
-        const keys = {};
-        window.addEventListener('keydown', e => keys[e.key] = true);
-        window.addEventListener('keyup', e => keys[e.key] = false);
-
-        // Controlli Mobile
-        document.getElementById('leftBtn').ontouchstart = (e) => { e.preventDefault(); keys['a'] = true; };
-        document.getElementById('leftBtn').ontouchend = () => keys['a'] = false;
-        document.getElementById('rightBtn').ontouchstart = (e) => { e.preventDefault(); keys['d'] = true; };
-        document.getElementById('rightBtn').ontouchend = () => keys['d'] = false;
-
-        function update() {
-            if (!gameActive) return;
-
-            if (keys['ArrowLeft'] || keys['a']) player.targetX -= 8;
-            if (keys['ArrowRight'] || keys['d']) player.targetX += 8;
-
-            player.x += (player.targetX - player.x) * 0.1;
-
-            // Limiti strada
-            const roadLimit = canvas.width * 0.25;
-            if (player.x < roadLimit) player.targetX = roadLimit;
-            if (player.x > canvas.width - roadLimit - player.w) player.targetX = canvas.width - roadLimit - player.w;
-
-            roadOffset += currentSpeed;
-            
-            // Update Palazzi
-            buildings.forEach(b => {
-                b.z += currentSpeed * 0.002;
-                if(b.z > 1.2) {
-                    b.z = 0;
-                    b.h = 150 + Math.random() * 200;
-                }
-            });
-
-            // Update Target
-            target.y += currentSpeed * 0.8;
-            if(target.y > canvas.height) spawnDelivery();
-
-            // Collisione
-            const dist = Math.hypot(player.x + player.w/2 - (canvas.width/2 + target.x), player.y - target.y);
-            if(dist < 50) {
-                score++;
-                currentSpeed += 0.2;
-                document.getElementById('score').innerText = score;
-                document.getElementById('speed').innerText = Math.floor(currentSpeed * 5);
-                spawnDelivery();
+        function renderShop() {
+            const shop = document.getElementById('shop-list');
+            shop.innerHTML = '';
+            for(let id in vehicles) {
+                const v = vehicles[id];
+                const isOwned = unlocked.includes(id);
+                shop.innerHTML += `
+                    <div class="shop-item ${isOwned ? (currentVehicle === id ? 'selected' : '') : 'locked'}" onclick="handleShopClick('${id}')">
+                        <img src="${v.img}"><br>
+                        <small>${v.name}</small><br>
+                        <b>${isOwned ? 'MIO' : '$'+v.price.toLocaleString()}</b>
+                    </div>
+                `;
             }
+            document.getElementById('menu-cash').innerText = userMoney.toLocaleString();
         }
 
-        function draw() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            // Disegna Strada Prospettica
-            ctx.fillStyle = "#555";
-            ctx.beginPath();
-            ctx.moveTo(canvas.width * 0.4, 0);
-            ctx.lineTo(canvas.width * 0.6, 0);
-            ctx.lineTo(canvas.width, canvas.height);
-            ctx.lineTo(0, canvas.height);
-            ctx.fill();
-
-            // Linea centrale
-            ctx.strokeStyle = "#fff";
-            ctx.setLineDash([40, 40]);
-            ctx.lineDashOffset = -roadOffset;
-            ctx.beginPath();
-            ctx.moveTo(canvas.width/2, 0);
-            ctx.lineTo(canvas.width/2, canvas.height);
-            ctx.stroke();
-            ctx.setLineDash([]);
-
-            // Disegna Palazzi
-            buildings.sort((a,b) => b.z - a.z).forEach(b => {
-                const scale = b.z;
-                const xPos = b.side ? (canvas.width/2 + (canvas.width * 0.1 * (1/scale))) : (canvas.width/2 - (canvas.width * 0.1 * (1/scale)) - b.w * scale);
-                const yPos = canvas.height * (1 - scale);
-                ctx.fillStyle = b.color;
-                ctx.fillRect(xPos, yPos, b.w * scale, b.h * scale);
-            });
-
-            // Disegna Target
-            ctx.drawImage(houseImg, canvas.width/2 + target.x - 30, target.y, 60, 60);
-
-            // Disegna Bici
-            ctx.drawImage(bikeImg, player.x, player.y, player.w, player.h);
+        function handleShopClick(id) {
+            if (unlocked.includes(id)) {
+                currentVehicle = id;
+            } else if (userMoney >= vehicles[id].price) {
+                userMoney -= vehicles[id].price;
+                unlocked.push(id);
+                currentVehicle = id;
+            }
+            localStorage.setItem('lele_cash', userMoney);
+            localStorage.setItem('lele_unlock', JSON.stringify(unlocked));
+            localStorage.setItem('lele_veh', currentVehicle);
+            renderShop();
         }
 
-        function animate() {
-            update();
-            draw();
-            if (gameActive) requestAnimationFrame(animate);
+        function init() { 
+            canvas.width = window.innerWidth; 
+            canvas.height = window.innerHeight; 
+            player.x = canvas.width / 2 - player.w / 2; 
+            player.targetX = player.x; 
+            player.y = canvas.height - 140; 
+            
+            currentSpeed = vehicles[currentVehicle].speed;
+            accelerationTimer = 0;
+            score = 0;
+            document.getElementById('score').innerText = score;
+
+            buildings.length = 0; 
+            for(let i=0; i<8; i++) spawnBuilding(i/8); 
+            spawnDelivery(); 
+        } 
+
+        function spawnBuilding(z) { 
+            const side = Math.random() > 0.5; 
+            buildings.push({ 
+                side: side, 
+                z: z || 0, 
+                h: 150 + Math.random() * 200, 
+                w: 100 + Math.random() * 50, 
+                color: `hsl(210, 20%, ${30 + Math.random() * 20}%)` 
+            }); 
+        } 
+
+        function spawnDelivery() { 
+            target.x = (Math.random() - 0.5) * (canvas.width * 0.4); 
+            target.y = -600; 
+        } 
+
+        function startGame() { 
+            mainMenu.style.display = 'none'; 
+            gameContainer.style.display = 'block'; 
+            if (isMobile) mobileControls.style.display = 'flex'; 
+            gameActive = true; 
+            init(); 
+            animate(); 
+        } 
+
+        function gameOver() {
+            gameActive = false;
+            const reward = score * 50;
+            userMoney += reward;
+            localStorage.setItem('lele_cash', userMoney);
+            alert(`CRASH! Velocità finale: ${Math.floor(currentSpeed * 10)} km/h. Incassato: $${reward}`);
+            location.reload();
         }
 
-        window.addEventListener('resize', init);
-    </script>
-</body>
+        function toggleSettings() { 
+            const modal = document.getElementById('settings-modal'); 
+            modal.style.display = modal.style.display === 'block' ? 'none' : 'block'; 
+        } 
+
+        const keys = {}; 
+        window.addEventListener('keydown', e => keys[e.key] = true); 
+        window.addEventListener('keyup', e => keys[e.key] = false); 
+
+        document.getElementById('leftBtn').ontouchstart = (e) => { e.preventDefault(); keys['a'] = true; }; 
+        document.getElementById('leftBtn').ontouchend = () => keys['a'] = false; 
+        document.getElementById('rightBtn').ontouchstart = (e) => { e.preventDefault(); keys['d'] = true; }; 
+        document.getElementById('rightBtn').ontouchend = () => keys['d'] = false; 
+
+        function update() { 
+            if (!gameActive) return; 
+
+            // Accelerazione costante nel tempo (ogni secondo circa aumenta)
+            accelerationTimer++;
+            if(accelerationTimer % 60 === 0) currentSpeed += 0.05;
+
+            let moveFactor = 10 + (currentSpeed * 0.5);
+            if (keys['ArrowLeft'] || keys['a']) player.targetX -= moveFactor; 
+            if (keys['ArrowRight'] || keys['d']) player.targetX += moveFactor; 
+
+            player.x += (player.targetX - player.x) * 0.15; 
+
+            // Limiti strada con Game Over se esci
+            const roadLimit = canvas.width * 0.15; 
+            if (player.x < roadLimit || player.x > canvas.width - roadLimit - player.w) gameOver(); 
+
+            roadOffset += currentSpeed; 
+            
+            buildings.forEach(b => { 
+                b.z += currentSpeed * 0.002; 
+                if(b.z > 1.2) { 
+                    b.z = 0; 
+                    b.h = 150 + Math.random() * 200; 
+                } 
+            }); 
+
+            target.y += currentSpeed; 
+            if(target.y > canvas.height) spawnDelivery(); 
+
+            // Collisione 
+            const dist = Math.hypot(player.x + player.w/2 - (canvas.width/2 + target.x), player.y - target.y); 
+            if(dist < 55) { 
+                score++; 
+                currentSpeed += 0.2; // Accelerazione per ogni punto preso
+                document.getElementById('score').innerText = score; 
+                spawnDelivery(); 
+            } 
+            document.getElementById('hud-speed').innerText = Math.floor(currentSpeed * 10);
+        } 
+
+        function draw() { 
+            ctx.clearRect(0, 0, canvas.width, canvas.height); 
+
+            // Strada 3D
+            ctx.fillStyle = "#34495e"; 
+            ctx.beginPath(); 
+            ctx.moveTo(canvas.width * 0.45, 0); 
+            ctx.lineTo(canvas.width * 0.55, 0); 
+            ctx.lineTo(canvas.width * 0.9, canvas.height); 
+            ctx.lineTo(canvas.width * 0.1, canvas.height); 
+            ctx.fill(); 
+
+            // Linea centrale 
+            ctx.strokeStyle = "#fff"; 
+            ctx.setLineDash([40, 40]); 
+            ctx.lineDashOffset = -roadOffset; 
+            ctx.beginPath(); 
+            ctx.moveTo(canvas.width/2, 0); 
+            ctx.lineTo(canvas.width/2, canvas.height); 
+            ctx.stroke(); 
+            ctx.setLineDash([]); 
+
+            // Palazzi 
+            buildings.sort((a,b) => b.z - a.z).forEach(b => { 
+                const scale = b.z; 
+                const xPos = b.side ? (canvas.width/2 + (canvas.width * 0.1 * (1/scale))) : (canvas.width/2 - (canvas.width * 0.1 * (1/scale)) - b.w * scale); 
+                const yPos = canvas.height * (1 - scale); 
+                ctx.fillStyle = b.color; 
+                ctx.fillRect(xPos, yPos, b.w * scale, b.h * scale); 
+            }); 
+
+            // Target 
+            ctx.drawImage(houseImg, canvas.width/2 + target.x - 30, target.y, 60, 60); 
+
+            // Mezzo attuale
+            const vImg = new Image();
+            vImg.src = vehicles[currentVehicle].img;
+            ctx.drawImage(vImg, player.x, player.y, player.w, player.h); 
+        } 
+
+        function animate() { 
+            update(); 
+            draw(); 
+            if (gameActive) requestAnimationFrame(animate); 
+        } 
+
+        renderShop();
+        window.addEventListener('resize', init); 
+    </script> 
+</body> 
 </html>
