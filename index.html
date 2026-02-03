@@ -373,11 +373,21 @@
         let unlocked = ['bike'];
         let currentVehicle = 'bike';
 
+        // AUTO-LOGIN AL CARICAMENTO
+        window.onload = () => {
+            const lastUser = localStorage.getItem('ds_last_session');
+            if(lastUser) {
+                document.getElementById('username-input').value = lastUser;
+                handleLogin();
+            }
+        };
+
         function handleLogin() {
             const input = document.getElementById('username-input').value.trim();
             if(!input) { alert("Per favore, inserisci un nome."); return; }
             
             currentUser = input;
+            localStorage.setItem('ds_last_session', currentUser); // Salva l'ultimo nome usato
             const savedData = localStorage.getItem(`ds_user_${currentUser.toLowerCase()}`);
             
             if(savedData) {
@@ -537,7 +547,13 @@
             userMoney += reward;
             saveSession();
             alert(`${msg}! Incasso: $${reward}`);
-            location.reload();
+            
+            // RITORNA AL MENU SENZA RESETTARE IL LOGIN
+            gameContainer.style.display = 'none';
+            mobileControls.style.display = 'none';
+            mainMenu.style.display = 'flex';
+            document.getElementById('menu-cash').innerText = userMoney.toLocaleString();
+            renderShop();
         }
 
         const keys = {}; 
