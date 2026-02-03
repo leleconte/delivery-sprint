@@ -13,6 +13,8 @@
             --danger: #d63031;
             --text: #2d3436;
             --white: #ffffff;
+            --road-color: #444;
+            --sky-color: #74b9ff;
         }
 
         * {
@@ -109,7 +111,7 @@
             position: relative;
             width: 100vw;
             height: 100vh;
-            background-color: #dfe6e9;
+            background-color: var(--sky-color);
             display: none;
         }
 
@@ -126,6 +128,7 @@
             display: flex;
             justify-content: space-between;
             pointer-events: none;
+            z-index: 10;
         }
 
         .stat-box {
@@ -144,26 +147,20 @@
             display: none;
             justify-content: space-between;
             align-items: flex-end;
+            z-index: 10;
         }
 
-        .joystick-area {
-            width: 120px;
-            height: 120px;
+        .nav-btn {
+            width: 80px;
+            height: 80px;
             background: rgba(255,255,255,0.3);
             border-radius: 50%;
+            border: 2px solid white;
             display: flex;
             justify-content: center;
             align-items: center;
-        }
-
-        .btn-action {
-            width: 70px;
-            height: 70px;
-            background: rgba(255,255,255,0.5);
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            color: white;
+            font-size: 2rem;
             font-weight: bold;
         }
 
@@ -206,14 +203,14 @@
     <div id="game-container">
         <div id="hud">
             <div class="stat-box">Punti: <span id="score">0</span></div>
-            <div class="stat-box">Stanchezza: <span id="stamina">0</span>%</div>
+            <div class="stat-box">Velocità: <span id="speed">0</span> km/h</div>
         </div>
 
         <canvas id="gameCanvas"></canvas>
 
         <div id="mobile-controls">
-            <div class="joystick-area" id="touch-move">MOVE</div>
-            <div class="btn-action" id="touch-action">ACTION</div>
+            <div class="nav-btn" id="leftBtn">←</div>
+            <div class="nav-btn" id="rightBtn">→</div>
         </div>
     </div>
 
@@ -224,40 +221,63 @@
         const gameContainer = document.getElementById('game-container');
         const mobileControls = document.getElementById('mobile-controls');
 
+        // Caricamento Asset
+        const bikeImg = new Image();
+        bikeImg.src = 'https://cdn-icons-png.flaticon.com/512/3163/3163174.png';
+        const houseImg = new Image();
+        houseImg.src = 'https://cdn-icons-png.flaticon.com/512/619/619153.png';
+
         let gameActive = false;
         let score = 0;
-        let stamina = 0;
-        
-        // Configurazione giocatore (Bici)
+        let roadOffset = 0;
+        let currentSpeed = 5;
+
         const player = {
             x: 0,
             y: 0,
-            size: 30,
-            speed: 5,
-            color: '#0984e3'
+            w: 60,
+            h: 60,
+            targetX: 0
         };
 
-        const deliveryPoint = {
+        const target = {
             x: 0,
-            y: 0,
-            size: 40,
-            color: '#fdcb6e'
+            y: -200,
+            w: 60,
+            h: 60,
+            depth: 1
         };
 
-        // Rilevamento Mobile
+        const buildings = [];
         const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
         function init() {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
-            player.x = canvas.width / 2;
-            player.y = canvas.height / 2;
+            player.x = canvas.width / 2 - player.w / 2;
+            player.targetX = player.x;
+            player.y = canvas.height - 140;
+
+            buildings.length = 0;
+            for(let i=0; i<8; i++) spawnBuilding(i/8);
             spawnDelivery();
         }
 
+        function spawnBuilding(z) {
+            const side = Math.random() > 0.5;
+            buildings.push({
+                side: side,
+                z: z || 0,
+                h: 150 + Math.random() * 200,
+                w: 100 + Math.random() * 50,
+                color: `hsl(200, 10%, ${40 + Math.random() * 20}%)`
+            });
+        }
+
         function spawnDelivery() {
-            deliveryPoint.x = Math.random() * (canvas.width - 100) + 50;
-            deliveryPoint.y = Math.random() * (canvas.height - 100) + 50;
+            target.x = (Math.random() - 0.5) * (canvas.width * 0.4);
+            target.y = -500;
+            target.depth = 1.5;
         }
 
         function startGame() {
@@ -274,41 +294,51 @@
             modal.style.display = modal.style.display === 'block' ? 'none' : 'block';
         }
 
-        // Input PC
         const keys = {};
         window.addEventListener('keydown', e => keys[e.key] = true);
         window.addEventListener('keyup', e => keys[e.key] = false);
 
-        // Input Mobile (Semplificato per demo)
-        let touchX = 0;
-        let touchY = 0;
-        window.addEventListener('touchstart', e => {
-            touchX = e.touches[0].clientX;
-            touchY = e.touches[0].clientY;
-        });
+        // Controlli Mobile
+        document.getElementById('leftBtn').ontouchstart = (e) => { e.preventDefault(); keys['a'] = true; };
+        document.getElementById('leftBtn').ontouchend = () => keys['a'] = false;
+        document.getElementById('rightBtn').ontouchstart = (e) => { e.preventDefault(); keys['d'] = true; };
+        document.getElementById('rightBtn').ontouchend = () => keys['d'] = false;
 
         function update() {
             if (!gameActive) return;
 
-            // Movimento PC
-            if (keys['ArrowUp'] || keys['w']) player.y -= player.speed;
-            if (keys['ArrowDown'] || keys['s']) player.y += player.speed;
-            if (keys['ArrowLeft'] || keys['a']) player.x -= player.speed;
-            if (keys['ArrowRight'] || keys['d']) player.x += player.speed;
+            if (keys['ArrowLeft'] || keys['a']) player.targetX -= 8;
+            if (keys['ArrowRight'] || keys['d']) player.targetX += 8;
 
-            // Limiti mappa
-            if (player.x < 0) player.x = 0;
-            if (player.x > canvas.width) player.x = canvas.width;
-            if (player.y < 0) player.y = 0;
-            if (player.y > canvas.height) player.y = canvas.height;
+            player.x += (player.targetX - player.x) * 0.1;
 
-            // Collisione con punto consegna
-            const dist = Math.hypot(player.x - deliveryPoint.x, player.y - deliveryPoint.y);
-            if (dist < player.size + deliveryPoint.size / 2) {
+            // Limiti strada
+            const roadLimit = canvas.width * 0.25;
+            if (player.x < roadLimit) player.targetX = roadLimit;
+            if (player.x > canvas.width - roadLimit - player.w) player.targetX = canvas.width - roadLimit - player.w;
+
+            roadOffset += currentSpeed;
+            
+            // Update Palazzi
+            buildings.forEach(b => {
+                b.z += currentSpeed * 0.002;
+                if(b.z > 1.2) {
+                    b.z = 0;
+                    b.h = 150 + Math.random() * 200;
+                }
+            });
+
+            // Update Target
+            target.y += currentSpeed * 0.8;
+            if(target.y > canvas.height) spawnDelivery();
+
+            // Collisione
+            const dist = Math.hypot(player.x + player.w/2 - (canvas.width/2 + target.x), player.y - target.y);
+            if(dist < 50) {
                 score++;
+                currentSpeed += 0.2;
                 document.getElementById('score').innerText = score;
-                stamina = Math.min(100, stamina + 10);
-                document.getElementById('stamina').innerText = stamina;
+                document.getElementById('speed').innerText = Math.floor(currentSpeed * 5);
                 spawnDelivery();
             }
         }
@@ -316,20 +346,39 @@
         function draw() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // Disegna punto consegna (Casa)
-            ctx.fillStyle = deliveryPoint.color;
+            // Disegna Strada Prospettica
+            ctx.fillStyle = "#555";
             ctx.beginPath();
-            ctx.arc(deliveryPoint.x, deliveryPoint.y, deliveryPoint.size / 2, 0, Math.PI * 2);
+            ctx.moveTo(canvas.width * 0.4, 0);
+            ctx.lineTo(canvas.width * 0.6, 0);
+            ctx.lineTo(canvas.width, canvas.height);
+            ctx.lineTo(0, canvas.height);
             ctx.fill();
-            ctx.fillStyle = "#fff";
-            ctx.fillText("DESTINAZIONE", deliveryPoint.x - 35, deliveryPoint.y - 30);
 
-            // Disegna Giocatore (Bici)
-            ctx.fillStyle = player.color;
-            ctx.shadowBlur = 15;
-            ctx.shadowColor = 'rgba(0,0,0,0.2)';
-            ctx.fillRect(player.x - player.size / 2, player.y - player.size / 2, player.size, player.size);
-            ctx.shadowBlur = 0;
+            // Linea centrale
+            ctx.strokeStyle = "#fff";
+            ctx.setLineDash([40, 40]);
+            ctx.lineDashOffset = -roadOffset;
+            ctx.beginPath();
+            ctx.moveTo(canvas.width/2, 0);
+            ctx.lineTo(canvas.width/2, canvas.height);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // Disegna Palazzi
+            buildings.sort((a,b) => b.z - a.z).forEach(b => {
+                const scale = b.z;
+                const xPos = b.side ? (canvas.width/2 + (canvas.width * 0.1 * (1/scale))) : (canvas.width/2 - (canvas.width * 0.1 * (1/scale)) - b.w * scale);
+                const yPos = canvas.height * (1 - scale);
+                ctx.fillStyle = b.color;
+                ctx.fillRect(xPos, yPos, b.w * scale, b.h * scale);
+            });
+
+            // Disegna Target
+            ctx.drawImage(houseImg, canvas.width/2 + target.x - 30, target.y, 60, 60);
+
+            // Disegna Bici
+            ctx.drawImage(bikeImg, player.x, player.y, player.w, player.h);
         }
 
         function animate() {
@@ -339,7 +388,6 @@
         }
 
         window.addEventListener('resize', init);
-
     </script>
 </body>
 </html>
