@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Delivery Sprint - Lele Conte</title>
+    <style>
+        /* DESIGN & COLOR PALETTE */
+        :root {
+            --bg-color: #f0f2f5;
+            --primary: #2d3436;
+            --accent: #0984e3;
+            --danger: #d63031;
+            --text: #2d3436;
+            --white: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            user-select: none;
+            touch-action: none;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text);
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        /* SCHERMATA PRINCIPALE */
+        #main-menu {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #74b9ff, #a29bfe);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            text-align: center;
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: 3rem;
+            color: var(--white);
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .author {
+            font-size: 1.2rem;
+            color: var(--white);
+            margin-bottom: 40px;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+
+        .author b {
+            font-weight: 700;
+            border-bottom: 2px solid var(--white);
+        }
+
+        .menu-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            width: 100%;
+            max-width: 300px;
+        }
+
+        button {
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.2s;
+            font-weight: 600;
+        }
+
+        .btn-play {
+            background-color: var(--white);
+            color: var(--accent);
+        }
+
+        .btn-settings {
+            background-color: rgba(255,255,255,0.2);
+            color: var(--white);
+            backdrop-filter: blur(5px);
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        /* AREA DI GIOCO */
+        #game-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            background-color: #dfe6e9;
+            display: none;
+        }
+
+        canvas {
+            display: block;
+        }
+
+        /* UI DURANTE IL GIOCO */
+        #hud {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            display: flex;
+            justify-content: space-between;
+            pointer-events: none;
+        }
+
+        .stat-box {
+            background: rgba(255,255,255,0.9);
+            padding: 10px 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        /* CONTROLLI MOBILE */
+        #mobile-controls {
+            position: absolute;
+            bottom: 30px;
+            left: 30px;
+            right: 30px;
+            display: none;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .joystick-area {
+            width: 120px;
+            height: 120px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .btn-action {
+            width: 70px;
+            height: 70px;
+            background: rgba(255,255,255,0.5);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+        }
+
+        /* MODALE IMPOSTAZIONI */
+        #settings-modal {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--white);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            z-index: 200;
+            display: none;
+            width: 90%;
+            max-width: 400px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="main-menu">
+        <h1>DELIVERY SPRINT</h1>
+        <p class="author">made by <b>Lele Conte</b></p>
+        
+        <div class="menu-buttons">
+            <button class="btn-play" onclick="startGame()">INIZIA CONSEGNE</button>
+            <button class="btn-settings" onclick="toggleSettings()">IMPOSTAZIONI</button>
+        </div>
+    </div>
+
+    <div id="settings-modal">
+        <h2 style="margin-bottom: 20px;">Impostazioni</h2>
+        <p>Difficoltà: Normale</p>
+        <p style="margin: 15px 0;">Versione: 1.0.2 (2026)</p>
+        <button class="btn-play" style="background: var(--accent); color: white; width: 100%;" onclick="toggleSettings()">CHIUDI</button>
+    </div>
+
+    <div id="game-container">
+        <div id="hud">
+            <div class="stat-box">Punti: <span id="score">0</span></div>
+            <div class="stat-box">Stanchezza: <span id="stamina">0</span>%</div>
+        </div>
+
+        <canvas id="gameCanvas"></canvas>
+
+        <div id="mobile-controls">
+            <div class="joystick-area" id="touch-move">MOVE</div>
+            <div class="btn-action" id="touch-action">ACTION</div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const mainMenu = document.getElementById('main-menu');
+        const gameContainer = document.getElementById('game-container');
+        const mobileControls = document.getElementById('mobile-controls');
+
+        let gameActive = false;
+        let score = 0;
+        let stamina = 0;
+        
+        // Configurazione giocatore (Bici)
+        const player = {
+            x: 0,
+            y: 0,
+            size: 30,
+            speed: 5,
+            color: '#0984e3'
+        };
+
+        const deliveryPoint = {
+            x: 0,
+            y: 0,
+            size: 40,
+            color: '#fdcb6e'
+        };
+
+        // Rilevamento Mobile
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+        function init() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            player.x = canvas.width / 2;
+            player.y = canvas.height / 2;
+            spawnDelivery();
+        }
+
+        function spawnDelivery() {
+            deliveryPoint.x = Math.random() * (canvas.width - 100) + 50;
+            deliveryPoint.y = Math.random() * (canvas.height - 100) + 50;
+        }
+
+        function startGame() {
+            mainMenu.style.display = 'none';
+            gameContainer.style.display = 'block';
+            if (isMobile) mobileControls.style.display = 'flex';
+            gameActive = true;
+            init();
+            animate();
+        }
+
+        function toggleSettings() {
+            const modal = document.getElementById('settings-modal');
+            modal.style.display = modal.style.display === 'block' ? 'none' : 'block';
+        }
+
+        // Input PC
+        const keys = {};
+        window.addEventListener('keydown', e => keys[e.key] = true);
+        window.addEventListener('keyup', e => keys[e.key] = false);
+
+        // Input Mobile (Semplificato per demo)
+        let touchX = 0;
+        let touchY = 0;
+        window.addEventListener('touchstart', e => {
+            touchX = e.touches[0].clientX;
+            touchY = e.touches[0].clientY;
+        });
+
+        function update() {
+            if (!gameActive) return;
+
+            // Movimento PC
+            if (keys['ArrowUp'] || keys['w']) player.y -= player.speed;
+            if (keys['ArrowDown'] || keys['s']) player.y += player.speed;
+            if (keys['ArrowLeft'] || keys['a']) player.x -= player.speed;
+            if (keys['ArrowRight'] || keys['d']) player.x += player.speed;
+
+            // Limiti mappa
+            if (player.x < 0) player.x = 0;
+            if (player.x > canvas.width) player.x = canvas.width;
+            if (player.y < 0) player.y = 0;
+            if (player.y > canvas.height) player.y = canvas.height;
+
+            // Collisione con punto consegna
+            const dist = Math.hypot(player.x - deliveryPoint.x, player.y - deliveryPoint.y);
+            if (dist < player.size + deliveryPoint.size / 2) {
+                score++;
+                document.getElementById('score').innerText = score;
+                stamina = Math.min(100, stamina + 10);
+                document.getElementById('stamina').innerText = stamina;
+                spawnDelivery();
+            }
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Disegna punto consegna (Casa)
+            ctx.fillStyle = deliveryPoint.color;
+            ctx.beginPath();
+            ctx.arc(deliveryPoint.x, deliveryPoint.y, deliveryPoint.size / 2, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = "#fff";
+            ctx.fillText("DESTINAZIONE", deliveryPoint.x - 35, deliveryPoint.y - 30);
+
+            // Disegna Giocatore (Bici)
+            ctx.fillStyle = player.color;
+            ctx.shadowBlur = 15;
+            ctx.shadowColor = 'rgba(0,0,0,0.2)';
+            ctx.fillRect(player.x - player.size / 2, player.y - player.size / 2, player.size, player.size);
+            ctx.shadowBlur = 0;
+        }
+
+        function animate() {
+            update();
+            draw();
+            if (gameActive) requestAnimationFrame(animate);
+        }
+
+        window.addEventListener('resize', init);
+
+    </script>
+</body>
+</html>
