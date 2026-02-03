@@ -76,7 +76,7 @@
             border: 1px solid rgba(255,255,255,0.2);
         }
 
-        /* SCHERMATA PRINCIPALE */ 
+        /* SCHERMATA PRINCIPALE RINNOVATA */ 
         #main-menu { 
             position: absolute; 
             width: 100%; 
@@ -91,37 +91,61 @@
             padding: 20px; 
         } 
 
-        h1 { 
-            font-size: 3.5rem; 
+        .logo-container {
+            font-size: 4rem;
+            margin-bottom: 10px;
+            animation: pulse 2s infinite ease-in-out;
+            filter: drop-shadow(0 0 15px var(--accent));
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); opacity: 0.8; }
+        }
+
+        .game-title {
+            font-size: 2.8rem;
             font-weight: 800;
-            color: var(--white); 
-            margin-bottom: 5px; 
-            text-transform: uppercase; 
-            letter-spacing: 6px; 
-            text-shadow: 0px 0px 20px rgba(0, 210, 255, 0.5); 
-        } 
+            background: linear-gradient(to bottom, #fff, #00d2ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 4px;
+            margin-bottom: 5px;
+        }
+
+        .user-welcome {
+            background: rgba(0, 210, 255, 0.15);
+            padding: 8px 20px;
+            border-radius: 12px;
+            border: 1px solid var(--accent);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 25px;
+            color: var(--accent);
+            font-weight: 600;
+        }
 
         .author { 
-            font-size: 1rem; 
+            font-size: 0.8rem; 
             color: var(--white); 
-            margin-bottom: 40px; 
-            opacity: 0.7; 
+            margin-bottom: 30px; 
+            opacity: 0.5; 
             font-weight: 400; 
-            letter-spacing: 2px;
+            letter-spacing: 1px;
         } 
 
-        .author b { color: var(--accent); }
-
         .balance-tag {
-            background: var(--glass);
-            padding: 10px 25px;
+            background: rgba(0,0,0,0.3);
+            padding: 12px 30px;
             border-radius: 50px;
-            border: 1px solid rgba(255,255,255,0.2);
+            border: 2px solid var(--gold);
             color: var(--gold);
             font-weight: 800;
-            font-size: 1.4rem;
-            margin-bottom: 30px;
-            backdrop-filter: blur(10px);
+            font-size: 1.6rem;
+            margin-bottom: 35px;
+            box-shadow: 0 0 15px rgba(255, 204, 0, 0.2);
         }
 
         .menu-buttons { 
@@ -159,29 +183,30 @@
 
         .btn-settings { 
             background: transparent;
-            color: rgba(255,255,255,0.5);
+            color: rgba(255,255,255,0.4);
             font-size: 0.8rem;
+            margin-top: 10px;
         } 
 
         button:hover { transform: translateY(-3px); opacity: 0.9; }
         button:active { transform: scale(0.95); } 
 
-        /* MODALI (Settings & Shop) */ 
+        /* MODALI */ 
         .modal { 
             position: absolute; 
             top: 50%; 
             left: 50%; 
             transform: translate(-50%, -50%); 
-            background: rgba(15, 12, 41, 0.95); 
+            background: rgba(15, 12, 41, 0.98); 
             padding: 30px; 
             border-radius: 30px; 
             border: 1px solid rgba(255,255,255,0.1);
-            box-shadow: 0 25px 50px rgba(0,0,0,0.5); 
+            box-shadow: 0 25px 50px rgba(0,0,0,0.8); 
             z-index: 200; 
             display: none; 
             width: 90%; 
             max-width: 450px; 
-            backdrop-filter: blur(20px);
+            backdrop-filter: blur(25px);
         } 
 
         .shop-grid {
@@ -193,9 +218,6 @@
             padding-right: 5px;
             margin: 20px 0;
         }
-
-        .shop-grid::-webkit-scrollbar { width: 4px; }
-        .shop-grid::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 10px; }
 
         .shop-item {
             background: rgba(255,255,255,0.05);
@@ -209,24 +231,7 @@
 
         .shop-item.selected { border-color: var(--accent); background: rgba(0, 210, 255, 0.1); }
         .shop-item.locked { opacity: 0.4; }
-        .shop-item img { width: 50px; height: 50px; object-fit: contain; margin-bottom: 10px; filter: drop-shadow(0 5px 5px rgba(0,0,0,0.3)); }
-        .shop-item b { display: block; font-size: 0.9rem; margin-top: 5px; color: var(--gold); }
-
-        .setting-row {
-            margin: 20px 0;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        select, input[type="range"] {
-            background: rgba(255,255,255,0.1);
-            color: white;
-            padding: 12px;
-            border-radius: 12px;
-            border: 1px solid rgba(255,255,255,0.2);
-            outline: none;
-        }
+        .shop-item img { width: 50px; height: 50px; object-fit: contain; margin-bottom: 10px; }
 
         /* AREA DI GIOCO */ 
         #game-container { 
@@ -286,59 +291,59 @@
 
     <div id="auth-screen">
         <div class="auth-box">
-            <h1>WELCOME</h1>
-            <p style="opacity: 0.6;">Inserisci il tuo nome per caricare i progressi</p>
-            <input type="text" id="username-input" placeholder="Username..." maxlength="15">
-            <button class="btn-play" style="width: 100%; margin-top: 20px;" onclick="handleLogin()">Entra nel Gioco</button>
+            <div class="logo-container">🚚</div>
+            <h1 style="letter-spacing: 5px; margin-bottom: 10px;">HELLO!</h1>
+            <p style="opacity: 0.6; font-size: 0.8rem;">Carica il tuo profilo conducente</p>
+            <input type="text" id="username-input" placeholder="Il tuo Nome..." maxlength="15">
+            <button class="btn-play" style="width: 100%; margin-top: 25px;" onclick="handleLogin()">Accedi al Terminale</button>
         </div>
     </div>
 
     <div id="main-menu"> 
-        <h1 id="menu-title">DELIVERY SPRINT</h1> 
-        <p class="author">sviluppato da <b>Lele Conte</b></p> 
+        <div class="logo-container">⚡</div>
+        <h1 class="game-title">DELIVERY SPRINT</h1> 
+        <div id="user-display" class="user-welcome">CONDUCENTE: <span id="user-name-label">...</span></div>
         
         <div class="balance-tag">$ <span id="menu-cash">0</span></div>
           
         <div class="menu-buttons"> 
-            <button class="btn-play" id="btn-start" onclick="startGame()">Inizia Consegne</button> 
-            <button class="btn-shop" onclick="toggleModal('shop-modal')">Garage & Negozio</button> 
+            <button class="btn-play" id="btn-start" onclick="startGame()">Avvia Motore</button> 
+            <button class="btn-shop" onclick="toggleModal('shop-modal')">Garage Personale</button> 
             <button class="btn-settings" id="btn-sett" onclick="toggleModal('settings-modal')">Impostazioni</button> 
         </div> 
+
+        <p class="author" style="margin-top: 40px;">powered by <b>Lele Conte</b></p> 
     </div> 
 
     <div id="shop-modal" class="modal">
-        <h2 style="text-align:center; letter-spacing: 2px;">GARAGE</h2>
+        <h2 style="text-align:center; letter-spacing: 2px;">IL TUO GARAGE</h2>
         <div class="shop-grid" id="shop-list"></div>
-        <button class="btn-play" style="width:100%" onclick="toggleModal('shop-modal')">Indietro</button>
+        <button class="btn-play" style="width:100%" onclick="toggleModal('shop-modal')">Chiudi Garage</button>
     </div>
 
     <div id="settings-modal" class="modal"> 
-        <h2 id="settings-title" style="margin-bottom: 20px; text-align:center;">SETTINGS</h2> 
+        <h2 id="settings-title" style="margin-bottom: 20px; text-align:center;">SISTEMA</h2> 
         
-        <div class="setting-row">
-            <label id="label-lang">Lingua:</label>
-            <select id="lang-select" onchange="updateLanguage()">
-                <option value="it">Italiano</option>
-                <option value="en">English</option>
-            </select>
+        <div style="display: flex; flex-direction: column; gap: 15px;">
+            <div class="setting-row">
+                <label id="label-lang">Lingua:</label>
+                <select id="lang-select" onchange="updateLanguage()" style="width: 100%; padding: 10px; background: #222; color: white; border-radius: 8px;">
+                    <option value="it">Italiano</option>
+                    <option value="en">English</option>
+                </select>
+            </div>
+            <div class="setting-row">
+                <label id="label-diff">Difficoltà:</label>
+                <select id="diff-select" style="width: 100%; padding: 10px; background: #222; color: white; border-radius: 8px;">
+                    <option value="0.5">Easy</option>
+                    <option value="1" selected>Normal</option>
+                    <option value="2">Hardcore</option>
+                </select>
+            </div>
         </div>
 
-        <div class="setting-row">
-            <label id="label-diff">Difficoltà:</label>
-            <select id="diff-select">
-                <option value="0.5">Facile</option>
-                <option value="1" selected>Normale</option>
-                <option value="2">Difficile</option>
-            </select>
-        </div>
-
-        <div class="setting-row">
-            <label id="label-bright">Luminosità Schermo:</label>
-            <input type="range" id="bright-range" min="30" max="120" value="100" oninput="updateBrightness()">
-        </div>
-
-        <p style="margin: 10px 0; font-size: 0.7rem; opacity: 0.4; text-align:center;">Build 1.0.7 (2026) - Persistent Engine</p> 
-        <button class="btn-shop" style="width: 100%;" onclick="toggleModal('settings-modal')">Salva e Chiudi</button> 
+        <p style="margin: 20px 0; font-size: 0.7rem; opacity: 0.4; text-align:center;">Versione 1.1.0 (2026)</p> 
+        <button class="btn-shop" style="width: 100%;" onclick="toggleModal('settings-modal')">Applica</button> 
     </div> 
 
     <div id="game-container"> 
@@ -363,18 +368,17 @@
         const mobileControls = document.getElementById('mobile-controls'); 
         const authScreen = document.getElementById('auth-screen');
 
-        // GESTIONE UTENTE E PERSISTENZA
         let currentUser = "";
         let userMoney = 0;
         let unlocked = ['bike'];
         let currentVehicle = 'bike';
 
         function handleLogin() {
-            const input = document.getElementById('username-input').value.trim().toLowerCase();
-            if(!input) { alert("Inserisci un nome!"); return; }
+            const input = document.getElementById('username-input').value.trim();
+            if(!input) { alert("Per favore, inserisci un nome."); return; }
             
             currentUser = input;
-            const savedData = localStorage.getItem(`ds_user_${currentUser}`);
+            const savedData = localStorage.getItem(`ds_user_${currentUser.toLowerCase()}`);
             
             if(savedData) {
                 const data = JSON.parse(savedData);
@@ -382,7 +386,6 @@
                 unlocked = data.unlocked;
                 currentVehicle = data.vehicle;
             } else {
-                // Nuovo utente
                 userMoney = 0;
                 unlocked = ['bike'];
                 currentVehicle = 'bike';
@@ -391,7 +394,7 @@
 
             authScreen.style.display = 'none';
             mainMenu.style.display = 'flex';
-            document.getElementById('menu-title').innerText = `CIAO, ${currentUser.toUpperCase()}`;
+            document.getElementById('user-name-label').innerText = currentUser;
             renderShop();
         }
 
@@ -427,21 +430,16 @@
             m.style.display = (m.style.display === 'block') ? 'none' : 'block';
         }
 
-        function updateBrightness() {
-            document.body.style.filter = `brightness(${document.getElementById('bright-range').value}%)`;
-        }
-
         function updateLanguage() {
             const lang = document.getElementById('lang-select').value;
             const t = {
-                it: { start: "Inizia Consegne", score: "Punti", lang: "Lingua:", diff: "Difficoltà:", bright: "Luminosità:", title: "Impostazioni" },
-                en: { start: "Start Delivery", score: "Score", lang: "Language:", diff: "Difficulty:", bright: "Brightness:", title: "Settings" }
+                it: { start: "Avvia Motore", score: "Punti", lang: "Lingua:", diff: "Difficoltà:", title: "SISTEMA" },
+                en: { start: "Start Engine", score: "Score", lang: "Language:", diff: "Difficulty:", title: "SYSTEM" }
             };
             document.getElementById('btn-start').innerText = t[lang].start;
             document.getElementById('hud-score-text').innerText = t[lang].score;
             document.getElementById('label-lang').innerText = t[lang].lang;
             document.getElementById('label-diff').innerText = t[lang].diff;
-            document.getElementById('label-bright').innerText = t[lang].bright;
             document.getElementById('settings-title').innerText = t[lang].title;
         }
 
@@ -454,8 +452,8 @@
                 shop.innerHTML += `
                     <div class="shop-item ${isOwned ? (currentVehicle === id ? 'selected' : '') : 'locked'}" onclick="handleShopClick('${id}')">
                         <img src="${v.img}">
-                        <small>${v.name}</small>
-                        <b>${isOwned ? (currentVehicle === id ? 'IN USO' : 'USA') : '$'+v.price.toLocaleString()}</b>
+                        <small style="display:block; margin-bottom:5px;">${v.name}</small>
+                        <b style="color:var(--gold); font-size:0.8rem;">${isOwned ? (currentVehicle === id ? 'ATTIVO' : 'USA') : '$'+v.price.toLocaleString()}</b>
                     </div>
                 `;
             }
@@ -476,12 +474,8 @@
 
         function saveSession() {
             if(!currentUser) return;
-            const data = {
-                cash: userMoney,
-                unlocked: unlocked,
-                vehicle: currentVehicle
-            };
-            localStorage.setItem(`ds_user_${currentUser}`, JSON.stringify(data));
+            const data = { cash: userMoney, unlocked: unlocked, vehicle: currentVehicle };
+            localStorage.setItem(`ds_user_${currentUser.toLowerCase()}`, JSON.stringify(data));
         }
 
         function init() { 
@@ -542,7 +536,7 @@
             const reward = score * 50;
             userMoney += reward;
             saveSession();
-            alert(`${msg}! Hai guadagnato: $${reward}`);
+            alert(`${msg}! Incasso: $${reward}`);
             location.reload();
         }
 
@@ -633,15 +627,12 @@
                 ctx.fillRect(xPos, yPos, b.w * scale, b.h * scale); 
             }); 
 
-            // Fossi
             potholes.forEach(p => {
                 ctx.drawImage(holeImg, canvas.width/2 + p.x - 20, p.y - 20, 40, 40);
             });
 
-            // Target 
             ctx.drawImage(houseImg, canvas.width/2 + target.x - 30, target.y, 60, 60); 
 
-            // Veicolo Attuale
             const vImg = new Image();
             vImg.src = vehicles[currentVehicle].img;
             ctx.drawImage(vImg, player.x, player.y, player.w, player.h); 
